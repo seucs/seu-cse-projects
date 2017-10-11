@@ -1,4 +1,4 @@
-# seu-cse-project
+# SEU CSE Projects
 总结计院各课程资料以及作业
 
 ## 目录
