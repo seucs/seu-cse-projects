@@ -1,0 +1,3180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0058)http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp -->
+<HTML><HEAD><TITLE>Writing own regular expression parser - The Code Project - C++ / MFC</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content=en-US name=MS.LOCALE>
+<META content="Explains principles behind writing regular expression parsers." 
+name=Description>
+<META content=kbArticle name=Search.TopicType>
+<META content="Amer Gerzic" name=Author>
+<META content="09 Nov 2003 14:00:00 GMT" name=Search.PublishDate>
+<META content="14 Nov 2003 14:00:00 GMT" name=Search.RevisedDate><!--<meta name="Search.UserRating"  content="86 %" /> -->
+<META 
+content="Free source code, C++ / MFC, Visual C++, MFC, Windows, Regular Expressions, NFA, DFA, Subset Construction" 
+name=keywords>
+<META 
+content="Article content copyright Amer Gerzic, 2003, everthing else Copyright © CodeProject, 1999-2006, All Rights Reserved." 
+name=Copyright><LINK title="CodeProject Lounge Postings" 
+href="http://www.codeproject.com/webservices/LoungeRSS.aspx" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - All topics" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=1" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - MFC / C++" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=2" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - C#" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=3" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - ASP.NET" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=4" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - .NET" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=5" 
+type=application/rss+xml rel=alternate>
+<META http-equiv=Reply-to content=mailto:webmaster@codeproject.com><LINK 
+href="/favicon.ico" type=image/ico rel=icon><LINK href="/favicon.ico" 
+rel="SHORTCUT ICON"><LINK 
+href="Writing own regular expression parser - The Code Project - C++ - MFC.files/global.css" 
+type=text/css rel=stylesheet>
+<SCRIPT language=javascript 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/oncopy.js"></SCRIPT>
+
+<META content="MSHTML 6.00.2745.2800" name=GENERATOR></HEAD>
+<BODY oncopy="return copyCode();" text=black vLink=purple aLink=red link=blue 
+bgColor=white leftMargin=3 topMargin=3><!-- COPYRIGHT 2006 I/PRO Corporation ALL RIGHTS RESERVED. - Page view auditing -->
+<SCRIPT language=JavaScript>
+var LSPT="";
+LSPT += "?durl=" + escape(document.URL);
+LSPT += "&hostname=" + location.hostname;
+LSPT += "&url=" + location.pathname;
+LSPT += "&query=" + escape(location.search) + escape(location.hash);
+LSPT += "&referrer=" + escape(document.referrer);
+LSPT += "&browser=" + escape(navigator.appName);
+LSPT += "&version=" + escape(navigator.appVersion);
+LSPT += "&os=" + escape(navigator.platform);
+LSPT += "&xdomain=codeproject.com";
+LSPT += "&custid=codeproject";
+</SCRIPT>
+
+<SCRIPT language=Javascript>
+document.write('<img src=http://'+'content.ipro.com/images/pixel.gif'+LSPT+' height="1" width="1" style="position:absolute; top:0px; left:0px">');
+</SCRIPT>
+<NOSCRIPT><IMG style="LEFT: 0px; POSITION: absolute; TOP: 0px" height=1 src="" 
+width=1> </NOSCRIPT><!-- END I/PRO PAGE TAG -->
+<TABLE cellSpacing=0 cellPadding=0 width="100%" bgColor=#ff9900 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <TABLE cellSpacing=1 cellPadding=0 width="100%" bgColor=#ff9900 
+        border=0><TBODY>
+        <TR>
+          <TD vAlign=top><A href="http://www.codeproject.com/"><IMG height=72 
+            alt="The Code Project" 
+            src="Writing own regular expression parser - The Code Project - C++ - MFC.files/logo225x72.gif" 
+            width=225 border=0></A></TD>
+          <TD align=right><SPAN id=AdBanner4>
+            <TABLE cellSpacing=0 cellPadding=0>
+              <TBODY>
+              <TR>
+                <TD><A class=AdLink 
+                  href="http://www.codeproject.com/script/admentor/ads.asp">View 
+                  our advertisers</A></TD>
+                <TD align=right><A class=AdLink 
+                  href="http://www.codeproject.com/info/mediakit">Advertise with 
+                  us</A></TD></TR>
+              <TR>
+                <TD colSpan=2>
+                  <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=1810&way=ban\" target=_blank><img src=\"/script/ann/ServeImg.aspx?File=%2Fscript%2Fadmentor%2Fimages%2FToolbox%5F468x60%2Egif&C=False&id=1810&cb=3663965\" alt=\"\" border=0 width=468 height=60></a>");</SCRIPT>
+                </TD></TR></TBODY></TABLE></SPAN></TD></TR>
+        <TR>
+          <TD bgColor=#fbedbb colSpan=2>
+            <TABLE cellPadding=3 width="100%" bgColor=#fbedbb border=0>
+              <TBODY>
+              <TR vAlign=top>
+                <TD width="100%"><FONT style="FONT-SIZE: 8pt"><A 
+                  href="http://www.codeproject.com/?cat=1">All Topics</A>, <A 
+                  href="http://www.codeproject.com/?cat=2">MFC / C++</A> 
+                  &gt;&gt; <A href="http://www.codeproject.com/cpp/">C++ / 
+                  MFC</A> &gt;&gt; <A 
+                  href="http://www.codeproject.com/cpp/#Parsers">Parsers</A></FONT><BR><BR><B><FONT 
+                  style="FONT-SIZE: 16pt" size=4>Writing own regular expression 
+                  parser</FONT></B><BR><B>By <A 
+                  href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261">Amer 
+                  Gerzic</A> </B><BR><BR><FONT style="FONT-SIZE: 9pt">Explains 
+                  principles behind writing regular expression 
+                  parsers.&nbsp;</FONT> </TD>
+                <TD vAlign=top align=right>
+                  <TABLE cellSpacing=0 cellPadding=1 width=200 border=0>
+                    <TBODY>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><FONT class=SmallText color=green 
+                        size=1><B>Beginner</B></FONT></TD></TR>
+                    <TR vAlign=top>
+                      <TD>&nbsp;</TD>
+                      <TD class=SmallText>C++ (VC7.1, VC7, VC6)<BR>Windows 
+                        (WinXP, Win2K, Win2003, Win95, NT4, Win98, 
+                        WinME)<BR>STL, Win32, VS (VS6)<BR>Dev</TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD class=SmallText noWrap>Posted 10 Nov 2003</TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD class=SmallText>Updated 15 Nov 2003</TD></TR>
+                    <TR vAlign=top>
+                      <TD><IMG height=16 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/hlp.gif" 
+                        width=16></TD>
+                      <TD class=SmallText noWrap><A 
+                        href="http://www.codeproject.com/script/Articles/list_articles.asp?userid=30261">Articles 
+                        by this author</A></TD></TR>
+                    <TR vAlign=top>
+                      <TD></TD>
+                      <TD class=SmallText noWrap><B>91,132</B> 
+                    views</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD colSpan=2>
+            <TABLE id=tblSiteToolbar cellSpacing=0 cellPadding=1 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <FORM name=Search action=/info/search.asp method=post>
+                <TD vAlign=top align=left width="100%">
+                  <TABLE cellSpacing=0 cellPadding=1 border=0>
+                    <TBODY>
+                    <TR vAlign=center>
+                      <TD class=smallText><B><FONT 
+                        color=white>Search:</FONT></B></TD>
+                      <TD class=navbar noWrap><INPUT class=smallText 
+                        maxLength=255 size=18 name=target></TD>
+                      <TD vAlign=top><SELECT class=smallText name=st> 
+                          <OPTION value=kw selected>Articles</OPTION> <OPTION 
+                          value=au>Authors</OPTION></SELECT></TD>
+                      <TD><INPUT class=formButton type=submit value=Go></TD></TR></TBODY></TABLE></TD></FORM>
+                <TD>
+                  <DIV id=MenuPos 
+                  style="WIDTH: 380px; POSITION: relative; HEIGHT: 20px">
+                  <TABLE height=20 cellSpacing=0 cellPadding=2 width=375>
+                    <TBODY>
+                    <TR>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/info/faq.asp">Help!</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/info/latest.asp">Articles</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/script/comments/forums.asp">Message 
+                        Boards</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/store/">StoreFront</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/lounge.asp">Lounge</A></TD></TR></TBODY></TABLE></DIV></TD></TR></TBODY></TABLE>
+            <SCRIPT type=text/javascript>function Go(){return}</SCRIPT>
+
+            <SCRIPT 
+            src="Writing own regular expression parser - The Code Project - C++ - MFC.files/cpmenu_var.js" 
+            type=text/javascript></SCRIPT>
+
+            <SCRIPT 
+            src="Writing own regular expression parser - The Code Project - C++ - MFC.files/menu10_com.js" 
+            type=text/javascript></SCRIPT>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=1 border=0>
+  <TBODY>
+  <TR vAlign=top>
+    <TD vAlign=top bgColor=#fbedbb rowSpan=2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <SCRIPT language=javascript>
+function ErrorHandle() {}
+window.onerror = ErrorHandle;
+
+function OnNLSubmit(option)
+{
+	if (option=="up")
+		document.subForm.action = "/script/profile/modify.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp";
+	else if (option=="in")
+		document.subForm.action = "/script/profile/process_logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp";
+	document.subForm.submit();
+	return true;
+}
+</SCRIPT>
+
+        <TBODY>
+        <TR>
+          <TD>
+            <TABLE cellSpacing=3 cellPadding=0>
+              <TBODY>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/support_icon.gif" 
+                  width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/store/"><B>Ultimate 
+                  Combo<BR>MFC tools $449</B></A></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/mail.gif" 
+                  width=16></TD>
+                <TD class=SmallText><A 
+                  href="http://www.codeproject.com/script/recommend/form.asp?guid=OwnRegExpressionsParser%2Flibrary11%2F10%2F2003">Send 
+                  to a friend</A></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR>
+                <TD bgColor=black colSpan=2><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif" 
+                  width=1></TD></TR>
+              <TR vAlign=top>
+                <TD class=InfoBarHeader colSpan=2><BR>Sign in / Sign 
+              up</TD></TR></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD class=smallText>
+            <FORM id=subForm name=subForm 
+            action=/script/profile/process_logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp 
+            method=post>
+            <TABLE cellSpacing=0 cellPadding=0 width=125 bgColor=#ffcc99 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD colSpan=2><IMG height=3 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif"></TD></TR>
+              <TR>
+                <TD class=smallText>&nbsp;Email</TD>
+                <TD class=smallText><INPUT class=smallText id=Email 
+                  style="WIDTH: 60px" name=Email> </TD></TR>
+              <TR>
+                <TD class=smallText>&nbsp;Password</TD>
+                <TD><INPUT class=smallText id=Password style="WIDTH: 60px" 
+                  type=password name=Password></TD></TR>
+              <TR>
+                <TD class=smallText vAlign=center colSpan=2><INPUT 
+                  type=checkbox CHECKED name=cookie>Remember me</TD></TR>
+              <TR>
+                <TD colSpan=2><IMG height=3 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif"></TD></TR>
+              <TR>
+                <TD align=middle><A 
+                  href="http://www.codeproject.com/script/profile/modify.asp"><IMG 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/signup.gif" 
+                  border=0></A></TD>
+                <TD align=middle><INPUT type=image 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/signin.gif" 
+                  border=0></TD></TR>
+              <TR>
+                <TD colSpan=2><IMG height=3 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif"></TD></TR></FORM></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD class=smallText><A class=smallText 
+            href="http://www.codeproject.com/script/profile/forgot.asp" 
+            name=HLLink>Lost your Password?</A></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <CENTER>
+            <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=1805&way=ban\" target=_blank><img src=\"/script/ann/ServeImg.aspx?File=%2Fscript%2Fadmentor%2Fimages%2FGrid%5F120x600%2Egif&C=False&id=1805&cb=3663966\" alt=\"\" border=0 width=120 height=600></a>");</SCRIPT>
+            <BR></CENTER><BR></TD></TR></TBODY></TABLE></TD>
+    <TD width=5 rowSpan=2><IMG height=1 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif" 
+      width=5> </TD>
+    <TD align=right width="100%" bgColor=white>
+      <TABLE width="100%">
+        <TBODY>
+        <TR vAlign=top>
+          <TD class=smallText vAlign=top noWrap>
+            <TABLE>
+              <TBODY>
+              <TR>
+                <TD class=smallText bgColor=#ffffff><IMG 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/print.gif" 
+                  align=absMiddle> <A 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?print=true" 
+                  target=_print>Print</A></TD>
+                <TD class=smallText bgColor=#ffffff><IMG 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/sitebuild_icon.gif" 
+                  align=absMiddle><A 
+                  href="http://www.codeproject.com/script/submit/ReportProblem.asp?GUID=OwnRegExpressionsParser%2Flibrary11%2F10%2F2003">Broken 
+                  Article?</A></TD>
+                <TD class=smallText bgColor=#ffffff><IMG 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/link.gif" 
+                  align=absMiddle><A 
+                  href="http://www.codeproject.com/script/profile/add_bookmark.asp?t=0&amp;ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp&amp;guid=OwnRegExpressionsParser%2Flibrary11%2F10%2F2003">Bookmark</A></TD>
+                <TD class=smallText bgColor=#ffffff><IMG 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/mail_small.gif" 
+                  align=absMiddle> <A 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#__comments">Discuss</A></TD></TR></TBODY></TABLE></TD>
+          <TD noWrap align=right><A name=__top></A>
+            <TABLE>
+              <TBODY>
+              <TR>
+                <TD class=smallText align=right>89 votes for this article.</TD>
+                <TD>
+                  <TABLE cellSpacing=0 cellPadding=0 border=2>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/red.gif" 
+                        width=20 border=0></TD>
+                      <TD><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/red.gif" 
+                        width=20 border=0></TD>
+                      <TD><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/red.gif" 
+                        width=20 border=0></TD>
+                      <TD><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/red.gif" 
+                        width=20 border=0></TD>
+                      <TD><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/red.gif" 
+                        width=16 border=0><IMG height=5 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/white.gif" 
+                        width=4 border=0></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD class=smallText align=right colSpan=2><A 
+                  title="Calculated as rating x Log10(# votes)" 
+                  href="http://www.codeproject.com/script/articles/top_articles.asp?st=2">Popularity: 
+                  9.33</A>. Rating: <B>4.78</B> out of 
+        5.</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD vAlign=top width="100%">
+      <DIV id=contentdiv><!-- Article Starts -->
+      <UL class=download>
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser/RegExSource.zip">Download 
+        source files - 8.48 Kb</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser/RegExDemo.zip">Download 
+        demo project - 22.9 Kb</A> </LI></UL>
+      <P><IMG height=223 alt="Sample Image - RegExDemo.jpg" 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/RegExDemo.jpg" 
+      width=600></P>
+      <H2>Introduction</H2>
+      <P>Have you ever wondered how regular expressions work in detail? If the 
+      answer is yes then this article is right for you. I will try to guide you 
+      step by step on how to create your own mini regular expression library. 
+      The purpose of the article is NOT to give you a highly optimized, tested 
+      and great regular expression library, but to explain principals behind the 
+      pattern matching in text files. If you only want a good library and don't 
+      care how it works, you probably want Boost regex library, which you can 
+      find <A href="http://www.boost.org/" target=_blank>here.</A> I used a 
+      couple of different regular expression libraries but I must say that I am 
+      happiest with Boost regex. Obviously you decide it for yourself. There is 
+      another regular expressions article here on CP which could be found <A 
+      href="http://www.codeproject.com/cpp/rexsearch.asp">here</A>. I must 
+      admit, I did not read the article completely but it seems to me that the 
+      article focuses mostly on how to use the regular expression library 
+      provided by the author. In this article, the author uses similar technique 
+      (I could be wrong though) to create a more sophisticated library. The 
+      article you are reading right now, could be seen as a prerequisite for the 
+      article I just mentioned above.</P>
+      <P>Regular expressions are part of MS .NET library or Java SDK (if you 
+      write code in Java). As you can see, regular expressions are available in 
+      many different programming languages and technologies. Actually the 
+      article does not focus on writing the library in a specific language. I 
+      wrote the code in C++, using STL primarily because it is my favorite 
+      language/library, but the principles from the article could be applied to 
+      any language (obviously). I will try to be as language independent as 
+      possible, using pseudo code where ever possible. If you want the code in 
+      Java, please send me an email. The code provided here in this article is 
+      free (obviously) but if you like it and use it in your application, it 
+      would be great if you would give me the credit for what I deserve. Also 
+      please email me, so I can show off to my peers and/or potential 
+      employers.</P>
+      <H2>Overview</H2>
+      <P>So how are we going to do it? Well before we start with coding, it is 
+      necessary to explain the mathematical background needed to fully 
+      understand the method used here in this article. I would strongly 
+      recommend to read and understand the math behind, because once we overcome 
+      the math part, the rest will be very simple. Note however that I will not 
+      have any mathematical proofs. If you are interested in proofs, please 
+      check out the references, which could be found in <A 
+      href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Eight">References</A> 
+      section of this article. Additionally, note that the regular expression 
+      parser, which we will create here will support these three operations:</P>
+      <OL>
+        <LI>Kleen Closure or Star operator ("*") 
+        <LI>Concatenation (For example: "ab") 
+        <LI>Union operator (denoted with character "|") </LI></OL>
+      <P>However many additional operators can be simulated by combining these 
+      three operators. For instance:</P>
+      <OL>
+        <LI>A+ = AA* (At least one A) 
+        <LI>[0-9] = (0|1|2|3|4|5|6|7|8|9) 
+        <LI>[A-Z] = (A|B|...|Z), etc. </LI></OL>
+      <P>The reason for implementing only three operators is simplicity. When I 
+      started planning to write this article, I quickly recognized that I had to 
+      limit myself in many ways. The topic is so large, that it would require a 
+      book to explain every little detail (maybe I will write it someday). As I 
+      stated above, the purpose of the article is not to equip you with a 
+      library but to introduce you to principles behind regular expressions. If 
+      you want to know more on how to use regular expressions, then you can 
+      check out the book: Mastering Regular Expressions - O'Reilly.</P>
+      <P>Following is the overview of the article:</P>
+      <OL>
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#One">What 
+        is NFA?</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Two">What 
+        is DFA?</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Three">Thompson's 
+        Algorithm</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Four">Subset 
+        Construction Algorithm</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Five">DFA 
+        optimization</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Six">Using 
+        the results from parts above</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Seven">Final 
+        Words</A> 
+        <LI><A 
+        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Eight">Reference</A> 
+        </LI></OL>
+      <H2><A name=One>What is NFA?</A></H2>
+      <P>NFA stands for <B>nondeterministic finite-state automata</B>. NFA can 
+      be seen as a special kind of final state machine, which is in a sense an 
+      abstract model of a machine with a primitive internal memory. If you want 
+      to know more about finite-state machines, please refer to <A 
+      href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Eight">References</A> 
+      section below.</P>
+      <P>Let us look at the mathematical definition of NFA.</P>
+      <P>An NFA <CODE>A</CODE> consists of:</P>
+      <BLOCKQUOTE>
+        <OL type=a>
+          <LI>A finite set <CODE>I</CODE> of input symbols 
+          <LI>A finite set <CODE>S</CODE> of states 
+          <LI>A next-state function <CODE>f</CODE> from <CODE>S</CODE> x 
+          <CODE>I</CODE> into <CODE>P(S)</CODE> 
+          <LI>A subset <CODE>Q</CODE> of <CODE>S</CODE> of accepting states 
+          <LI>An initial state <CODE>s0</CODE> from <CODE>S</CODE> </LI></OL>
+        <P>denoted as <CODE>A(I, S, f, Q, s0)</CODE></P></BLOCKQUOTE>
+      <P>If we would explain the above definition to a 12 year old, we could say 
+      that an NFA is a set <CODE>S</CODE> of states that are connected by 
+      function <CODE>f</CODE> (maybe to a smarter 12 year old). NFAs are 
+      represented in two formats: Table and Graph. For example, let us look at 
+      the table representation:</P>
+      <TABLE width="100%" border=1>
+        <TBODY>
+        <TR>
+          <TH width="12%">
+            <P>Input</P>
+            <P>States</P></TH>
+          <TH width="15%">a</TH>
+          <TH width="17%">b</TH>
+          <TH width="15%">c</TH>
+          <TH width="17%">d</TH>
+          <TH width="24%">Epsilon</TH></TR>
+        <TR>
+          <TD><CODE>s0</CODE></TD>
+          <TD>
+            <DIV align=center><CODE>s1</CODE>,<CODE>s3</CODE></DIV></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>s1</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>
+            <DIV align=center><CODE>{s2}</CODE></DIV></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>{s2}</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>s3</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>
+            <DIV align=center><CODE>s4</CODE>,<CODE>s5</CODE></DIV></TD></TR>
+        <TR>
+          <TD><CODE>s4</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>
+            <DIV align=center><CODE>{s6}</CODE></DIV></TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>s5</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>
+            <DIV align=center><CODE>{s7}</CODE></DIV></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>{s6}</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><CODE>{s7}</CODE></TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD>
+          <TD>&nbsp;</TD></TR></TBODY></TABLE>
+      <P>An equivalent graph would be:</P>
+      <P align=center><IMG height=471 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/graph1.jpg" 
+      width=329></P>
+      <P>Looking at the table/graph above, we can see that there are special 
+      transitions called Epsilon transitions, which is one of the special 
+      features of NFA. A transition is an event of going from one state to 
+      another. Epsilon transition is a transition from one state to another on 
+      an empty string. In other words, we are going from one state to another on 
+      no character input. For example, as we can see from table/graph above, we 
+      can go on no input from <CODE>s3</CODE> to <CODE>s4</CODE> and 
+      <CODE>s5</CODE>, which means that we have a <B>choice</B>. Similarly, 
+      there is a <B>choice</B> to go from state <CODE>s0</CODE> to states 
+      <CODE>s1</CODE> or <CODE>s3</CODE> on character input <CODE>a</CODE>. 
+      Hence the name <B>nondeterministic</B>, because at some point, the path 
+      which we are able to go is not unique but we have a <B>choice</B>. The 
+      final and accepting states are drawn double circled (or enclosed in "{}" 
+      in the table), like for example <CODE>s6</CODE>. Once one of these states 
+      is reached, we have an accepting state, and hence an accepting character 
+      string.</P>
+      <P>In an NFA, like the mathematical definition defines, there is always a 
+      starting state. I used Graphvis, a great tool for drawing different kinds 
+      of graphs (see <A 
+      href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#Eight">References</A> 
+      section), for drawing of NFAs and DFAs (see later). Because Graphvis is 
+      laying out the nodes of a graph on its own, it seems to me that a starting 
+      state is always the state drawn at the top of the graph. So we will follow 
+      that convention.</P>
+      <H2><A name=Two>What is DFA?</A></H2>
+      <P>DFA stands for <B>deterministic finite state automata</B>. DFA is very 
+      closely related to NFA. As a matter of fact, the mathematical definition 
+      of NFA works for DFA too. But obviously there are differences, from which 
+      we will take advantage. One big difference is that in a DFA there are no 
+      Epsilon transitions. Additionally, for each state all transitions leading 
+      away from this state are done on different input characters. In other 
+      words, if we are in state <CODE>s</CODE>, then on input character 
+      <CODE>a</CODE>, there is a unique transition on that character from 
+      <CODE>s</CODE>. Additionally, in a DFA all states must have a valid 
+      transition on an input character. Input character here is finite set 
+      <CODE>I</CODE> of input symbols (like in mathematical definition). For 
+      example, in the above graph (under DFA), the set of symbols <CODE>I</CODE> 
+      would be <CODE>{a,b,c,d}</CODE>.</P>
+      <P>Now that we understand NFAs and DFAs, we can proceed by saying that 
+      given any NFA, there is an equivalent DFA (You are going to have to trust 
+      me on this because I don't think it is appropriate to give you the 
+      mathematical proof of this statement). As humans, generally it is easier 
+      for us to construct an NFA, as well as interpret what language an NFA 
+      accepts. But why do we need the DFAs then? Well if we think about 
+      computers, it is very hard to "teach" them to do very well educated 
+      guesses (sometimes even we can't make smart educated guesses). And this is 
+      exactly what the computer needs to do, when traversing an NFA. If we would 
+      write an algorithm, which would use an NFA to check for an accepting 
+      combination of characters, it would involve backtracking to check for 
+      choices that it did not make previously. Obviously, there are regular 
+      expression parsers which work using NFAs, but they are generally slower 
+      than those that use DFAs. This is due to the fact that a DFA has a unique 
+      path for each accepting string, so no backtracking is involved. Hence, we 
+      are going to use a DFA to check if a combination of input characters is 
+      accepted by an automata.</P>
+      <P><B>Note</B>: If you really want to understand both NFAs and DFAs, I 
+      would recommend to do further reading on these topics. It is useful as an 
+      exercise to convert from one to another, to fully understand the 
+      difference and the algorithm used here to convert NFA to DFA (see 
+      later).</P>
+      <H2><A name=Three>Thompson's Algorithm</A></H2>
+      <P>Now that we have all the mathematical background that we need to 
+      understand regular expressions, we need to start thinking about what is 
+      our goal. As a first step, we realize that we need a way of going from a 
+      regular expression (like <CODE>ab*(a|b)*</CODE>) to a data structure, 
+      which will be easy to manipulate and use for pattern matching. But let us 
+      first look at the method for converting a regular expression to an NFA. 
+      Probably the most famous algorithm for doing this conversion is Thompson's 
+      algorithm. This algorithm is not the most efficient, but it ensures that 
+      any regular expression (assuming that its syntax is correct) will be 
+      successfully converted to an NFA. With the help of the basic NFA as seen 
+      from figure below, we can construct any other:</P>
+      <P align=center><IMG height=130 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/basicNFA.jpg" 
+      width=170></P>
+      <P>Using the basic elements above, we will construct three operations, 
+      which we would like to implement in our regular expression parser like the 
+      following:</P>
+      <P align=center><IMG height=400 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/Thompson.jpg" 
+      width=450></P>
+      <P>But how do we go from something like <CODE>(a|b)*ab</CODE> to the graph 
+      above? If we consider what we really need to do, we can see that 
+      evaluating regular expressions is similar to evaluating arithmetic 
+      expressions. For example, if we would like to evaluate 
+      <CODE>R=A+B*C-D</CODE>, we could do it like:</P>
+      <BLOCKQUOTE>
+        <P>PUSH A</P>
+        <P>PUSH B</P>
+        <P>PUSH C</P>
+        <P>MUL</P>
+        <P>ADD</P>
+        <P>PUSH D</P>
+        <P>SUB</P>
+        <P>POP R</P></BLOCKQUOTE>
+      <P>Here <CODE>PUSH</CODE> and <CODE>POP</CODE> are stacks and 
+      <CODE>MUL</CODE>, <CODE>ADD</CODE> and <CODE>SUB</CODE> take 2 operands 
+      from the stack and do the corresponding operation. We could use this 
+      knowledge for constructing an NFA from a regular expression. Let's look at 
+      the sequence of operations that need to be performed in order to construct 
+      an NFA from a regular expression <CODE>(a|b)*cd</CODE>:</P>
+      <BLOCKQUOTE>
+        <P>PUSH a</P>
+        <P>PUSH b</P>
+        <P>UNION</P>
+        <P>STAR</P>
+        <P>PUSH c</P>
+        <P>CONCAT</P>
+        <P>PUSH d</P>
+        <P>CONCAT</P>
+        <P>POP R</P></BLOCKQUOTE>
+      <P>As we can see, it is very similar to the evaluation of arithmetic 
+      expressions. The difference is that in regular expressions the star 
+      operation pops only one element from the stack and evaluates the star 
+      operator. Additionally, the concatenation operation is not denoted by any 
+      symbol, so we would have to detect it. The code provided with the article 
+      simplifies the problem by pre-processing the regular expression and 
+      inserting a character ASCII code 0x8 whenever a concatenation is detected. 
+      Obviously it is possible to do this "on the fly", during the evaluation of 
+      the regular expression, but I wanted to simplify the evaluation as much as 
+      possible. The pre-processing does nothing else but detects a combination 
+      of symbols that would result in concatenation, like for example: 
+      <CODE>ab</CODE>, <CODE>a(</CODE>, 
+      <CODE>)a</CODE>,<CODE>*a</CODE>,<CODE>*(</CODE>, <CODE>)(</CODE>. </P>
+      <P><CODE>PUSH</CODE> and <CODE>POP</CODE> operations actually work with a 
+      stack of simple NFA objects. If we would <CODE>PUSH</CODE> symbol 
+      <CODE>a</CODE> on the stack, the operation would create two state objects 
+      on the heap and create a transition object on symbol <CODE>a</CODE> from 
+      state 1 to state 2. Here is the portion of the code that pushes a 
+      character on the stack:</P><PRE><SPAN class=cpp-keyword>void</SPAN> CAG_RegEx::Push(<SPAN class=cpp-keyword>char</SPAN> chInput)
+{
+    <SPAN class=cpp-comment>// Create 2 new states on the heap</SPAN>
+    CAG_State *s0 = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+    CAG_State *s1 = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+
+    <SPAN class=cpp-comment>// Add the transition from s0-&gt;s1 on input character</SPAN>
+    s0-&gt;AddTransition(chInput, s1);
+
+    <SPAN class=cpp-comment>// Create a NFA from these 2 states </SPAN>
+    FSA_TABLE NFATable;
+    NFATable.push_back(s0);
+    NFATable.push_back(s1);
+
+    <SPAN class=cpp-comment>// push it onto the operand stack</SPAN>
+    m_OperandStack.push(NFATable);
+
+    <SPAN class=cpp-comment>// Add this character to the input character set</SPAN>
+    m_InputSet.insert(chInput);
+}</PRE>
+      <P>As we can see, the character is converted to a simple NFA and then the 
+      resulting NFA is added to the stack. <CODE>CAG_State</CODE> class is a 
+      simple class, which helps us structure the a NFA as we need it. It 
+      contains an array of transitions to other states on specific characters. 
+      Epsilon transition is transition on character 0x0. At this point, it is 
+      easy to see the structure behind NFA. An NFA (and DFA) is stored as a 
+      sequence of states (<CODE>deque</CODE> of <CODE>CAG_State</CODE> 
+      pointers). Each state is having as a member, all the transitions stored in 
+      a multimap. A transition is nothing else than mapping from a character to 
+      a state (<CODE>CAG_State*</CODE>). For detailed definition of the 
+      <CODE>CAG_State</CODE> class, please refer to the code.</P>
+      <P>Now back to the conversion from regular expression to NFA. Now that we 
+      know how to push the NFA onto the stack, the pop operation is trivial. 
+      Just retrieve the NFA from the stack and that's it. As I said earlier, a 
+      NFA table is defined to be a double ended queue (STL container 
+      <CODE>deque&lt;CAG_State*&gt;</CODE>). In this way, we know that the first 
+      state in the array is always the starting state, while the last state is 
+      final/accepting state. By preserving this order, we can quickly get the 
+      first and last states as well as append and prepend additional states when 
+      performing operations (like Star operator). Here is the code to evaluate 
+      each individual operation:</P><PRE>BOOL CAG_RegEx::Concat()
+{
+    <SPAN class=cpp-comment>// Pop 2 elements</SPAN>
+    FSA_TABLE A, B;
+    <SPAN class=cpp-keyword>if</SPAN>(!Pop(B) || !Pop(A))
+        <SPAN class=cpp-keyword>return</SPAN> FALSE;
+
+    <SPAN class=cpp-comment>// Now evaluate AB</SPAN>
+    <SPAN class=cpp-comment>// Basically take the last state from A</SPAN>
+    <SPAN class=cpp-comment>// and add an epsilon transition to the</SPAN>
+    <SPAN class=cpp-comment>// first state of B. Store the result into</SPAN>
+    <SPAN class=cpp-comment>// new NFA_TABLE and push it onto the stack</SPAN>
+    A[A.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, B[<SPAN class=cpp-literal>0</SPAN>]);
+    A.insert(A.end(), B.begin(), B.end());
+
+    <SPAN class=cpp-comment>// Push the result onto the stack</SPAN>
+    m_OperandStack.push(A);
+    
+    <SPAN class=cpp-keyword>return</SPAN> TRUE;
+}</PRE>
+      <P>As we can see, the concatenation is popping two NFAs from the stack. 
+      First NFA is changed, so that it is now new NFA, which is then pushed on 
+      the stack. Note that we first pop second operand. This is the case because 
+      in regular expressions, the order of operands is of importance because AB 
+      != BA (not commutative).</P><PRE>BOOL CAG_RegEx::Star()
+{
+    <SPAN class=cpp-comment>// Pop 1 element</SPAN>
+    FSA_TABLE A, B;
+    <SPAN class=cpp-keyword>if</SPAN>(!Pop(A))
+        <SPAN class=cpp-keyword>return</SPAN> FALSE;
+
+    <SPAN class=cpp-comment>// Now evaluate A*</SPAN>
+    <SPAN class=cpp-comment>// Create 2 new states which will be inserted </SPAN>
+    <SPAN class=cpp-comment>// at each end of deque. Also take A and make </SPAN>
+    <SPAN class=cpp-comment>// a epsilon transition from last to the first </SPAN>
+    <SPAN class=cpp-comment>// state in the queue. Add epsilon transition </SPAN>
+    <SPAN class=cpp-comment>// between two new states so that the one inserted </SPAN>
+    <SPAN class=cpp-comment>// at the begin will be the source and the one</SPAN>
+    <SPAN class=cpp-comment>// inserted at the end will be the destination</SPAN>
+    CAG_State *pStartState    = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+    CAG_State *pEndState    = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+    pStartState-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, pEndState);
+
+    <SPAN class=cpp-comment>// add epsilon transition from start state to the first state of A</SPAN>
+    pStartState-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, A[<SPAN class=cpp-literal>0</SPAN>]);
+
+    <SPAN class=cpp-comment>// add epsilon transition from A last state to end state</SPAN>
+    A[A.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, pEndState);
+
+    <SPAN class=cpp-comment>// From A last to A first state</SPAN>
+    A[A.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, A[<SPAN class=cpp-literal>0</SPAN>]);
+
+    <SPAN class=cpp-comment>// construct new DFA and store it onto the stack</SPAN>
+    A.push_back(pEndState);
+    A.push_front(pStartState);
+
+    <SPAN class=cpp-comment>// Push the result onto the stack</SPAN>
+    m_OperandStack.push(A);
+
+    <SPAN class=cpp-keyword>return</SPAN> TRUE;
+}</PRE>
+      <P>Star operator pops a single element from the stack, changes it 
+      according to the Thompson's rule (see above) and then pushes it on the 
+      stack.</P><PRE>BOOL CAG_RegEx::Union()
+{
+    <SPAN class=cpp-comment>// Pop 2 elements</SPAN>
+    FSA_TABLE A, B;
+    <SPAN class=cpp-keyword>if</SPAN>(!Pop(B) || !Pop(A))
+        <SPAN class=cpp-keyword>return</SPAN> FALSE;
+
+    <SPAN class=cpp-comment>// Now evaluate A|B</SPAN>
+    <SPAN class=cpp-comment>// Create 2 new states, a start state and</SPAN>
+    <SPAN class=cpp-comment>// a end state. Create epsilon transition from</SPAN>
+    <SPAN class=cpp-comment>// start state to the start states of A and B</SPAN>
+    <SPAN class=cpp-comment>// Create epsilon transition from the end </SPAN>
+    <SPAN class=cpp-comment>// states of A and B to the new end state</SPAN>
+    CAG_State *pStartState    = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+    CAG_State *pEndState    = <SPAN class=cpp-keyword>new</SPAN> CAG_State(++m_nNextStateID);
+    pStartState-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, A[<SPAN class=cpp-literal>0</SPAN>]);
+    pStartState-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, B[<SPAN class=cpp-literal>0</SPAN>]);
+    A[A.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, pEndState);
+    B[B.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;AddTransition(<SPAN class=cpp-literal>0</SPAN>, pEndState);
+
+    <SPAN class=cpp-comment>// Create new NFA from A</SPAN>
+    B.push_back(pEndState);
+    A.push_front(pStartState);
+    A.insert(A.end(), B.begin(), B.end());
+
+    <SPAN class=cpp-comment>// Push the result onto the stack</SPAN>
+    m_OperandStack.push(A);
+
+    <SPAN class=cpp-keyword>return</SPAN> TRUE;
+}</PRE>
+      <P>Finally, the union pops two elements, makes the transformation and 
+      pushes the result on the stack. Note that here we have to watch for the 
+      order of the operation. </P>
+      <P>Finally, we are now able to evaluate the regular expression. If 
+      everything goes well, we will have a single NFA on the stack, which will 
+      be our resulting NFA. Here is the code, which utilizes the above 
+      functions.</P><PRE>BOOL CAG_RegEx::CreateNFA(string strRegEx)
+{
+    <SPAN class=cpp-comment>// Parse regular expresion using similar </SPAN>
+    <SPAN class=cpp-comment>// method to evaluate arithmetic expressions</SPAN>
+    <SPAN class=cpp-comment>// But first we will detect concatenation and</SPAN>
+    <SPAN class=cpp-comment>// insert char(8) at the position where </SPAN>
+    <SPAN class=cpp-comment>// concatenation needs to occur</SPAN>
+    strRegEx = ConcatExpand(strRegEx);
+
+    <SPAN class=cpp-keyword>for</SPAN>(<SPAN class=cpp-keyword>int</SPAN> i=<SPAN class=cpp-literal>0</SPAN>; i&lt;strRegEx.size(); ++i)
+    {
+        <SPAN class=cpp-comment>// get the charcter</SPAN>
+        <SPAN class=cpp-keyword>char</SPAN> c = strRegEx[i];
+        
+        <SPAN class=cpp-keyword>if</SPAN>(IsInput(c))
+            Push(c);
+        <SPAN class=cpp-keyword>else</SPAN> <SPAN class=cpp-keyword>if</SPAN>(m_OperatorStack.empty())
+            m_OperatorStack.push(c);
+        <SPAN class=cpp-keyword>else</SPAN> <SPAN class=cpp-keyword>if</SPAN>(IsLeftParanthesis(c))
+            m_OperatorStack.push(c);
+        <SPAN class=cpp-keyword>else</SPAN> <SPAN class=cpp-keyword>if</SPAN>(IsRightParanthesis(c))
+        {
+            <SPAN class=cpp-comment>// Evaluate everyting in paranthesis</SPAN>
+            <SPAN class=cpp-keyword>while</SPAN>(!IsLeftParanthesis(m_OperatorStack.top()))
+                <SPAN class=cpp-keyword>if</SPAN>(!Eval())
+                    <SPAN class=cpp-keyword>return</SPAN> FALSE;
+            <SPAN class=cpp-comment>// Remove left paranthesis after the evaluation</SPAN>
+            m_OperatorStack.pop(); 
+        }
+        <SPAN class=cpp-keyword>else</SPAN>
+        {
+            <SPAN class=cpp-keyword>while</SPAN>(!m_OperatorStack.empty() &amp;&amp; Presedence(c, m_OperatorStack.top()))
+                <SPAN class=cpp-keyword>if</SPAN>(!Eval())
+                    <SPAN class=cpp-keyword>return</SPAN> FALSE;
+            m_OperatorStack.push(c);
+        }
+    }
+
+    <SPAN class=cpp-comment>// Evaluate the rest of operators</SPAN>
+    <SPAN class=cpp-keyword>while</SPAN>(!m_OperatorStack.empty())
+        <SPAN class=cpp-keyword>if</SPAN>(!Eval())
+            <SPAN class=cpp-keyword>return</SPAN> FALSE;
+
+    <SPAN class=cpp-comment>// Pop the result from the stack</SPAN>
+    <SPAN class=cpp-keyword>if</SPAN>(!Pop(m_NFATable))
+        <SPAN class=cpp-keyword>return</SPAN> FALSE;
+
+    <SPAN class=cpp-comment>// Last NFA state is always accepting state</SPAN>
+    m_NFATable[m_NFATable.size()-<SPAN class=cpp-literal>1</SPAN>]-&gt;m_bAcceptingState = TRUE;
+
+    <SPAN class=cpp-keyword>return</SPAN> TRUE;
+}</PRE>
+      <P>Function <CODE>Eval</CODE> is actually evaluating the next operator on 
+      the stack. Function <CODE>Eval()</CODE> pops the next operator from the 
+      operator stack, and using the <CODE><SPAN 
+      class=cpp-keyword>switch</SPAN></CODE> statement, it determines which 
+      operation to use. Parenthesis are treated as operators too, because they 
+      determine the order of evaluation. The function <CODE>Presedence(<SPAN 
+      class=cpp-keyword>char</SPAN> Left, <SPAN class=cpp-keyword>char</SPAN> 
+      Right)</CODE> determines the precedence of two operators and returns 
+      <CODE>TRUE</CODE> if precedence of <CODE>Left</CODE> operator &lt;= 
+      precedence of <CODE>Right</CODE> operator. Please check out the code for 
+      implementation.</P>
+      <H2><A name=Four>Subset Construction Algorithm</A></H2>
+      <P>Now that we know how to convert any regular expression to an NFA, the 
+      next step is to convert NFA to DFA. At first, this process seems to be 
+      very challenging. We have a graph with zero or more Epsilon transitions, 
+      and multiple transitions on single character and we need an equivalent 
+      graph with no Epsilon transitions and a unique path for each accepted 
+      sequence of input characters. Like I said, it seems to be very 
+      challenging, but it is really not. Mathematicians actually already solved 
+      that problem for us, and then using the results, computer scientists 
+      created the Subset Construction Algorithm. I am not sure whom to give 
+      credit here but the Subset Construction Algorithm goes like this:</P>
+      <P>First, let us define 2 functions:</P>
+      <UL>
+        <LI><CODE>Epsilon Closure</CODE>: This function takes as a parameter, a 
+        set of states <CODE>T</CODE> and returns again a set of states 
+        containing all those states, which can be reached from each individual 
+        state of the given set <CODE>T</CODE> on Epsilon transition. 
+        <LI><CODE>Move</CODE>: Move takes a set of states <CODE>T</CODE> and 
+        input character <CODE>a</CODE> and returns all the states that can be 
+        reached on given input character form all states in <CODE>T</CODE>. 
+      </LI></UL>
+      <P>Now using these 2 functions, we can perform the transformation:</P>
+      <OL>
+        <LI>The start state of DFA is created by taking the <CODE>Epsilon 
+        closure</CODE> of the start state of the NFA 
+        <LI>For each new DFA state, perform the following for each input 
+        character: 
+        <OL type=i>
+          <LI>Perform <CODE>move</CODE> to the newly created state 
+          <LI>Create new state by taking the <CODE>Epsilon closure</CODE> of the 
+          result (i). Note that here we could get a state, which is already 
+          present in our set. This will result in a set of states, which will 
+          form the new DFA state. Note that here from one or many NFA states, we 
+          are constructing a single DFA state. </LI></OL>
+        <LI>For each newly created state, perform step 2. 
+        <LI>Accepting states of DFA are all those states, which contain at least 
+        one of the accepting states from NFA. Keep in mind that we are here 
+        constructing a single DFA state from one or many NFA states.</LI></OL>
+      <P>Simple enough? If not, then read further. Following is the pseudo code 
+      found on the pages 118-121 of the book "Compilers - Principles, Techniques 
+      and Tools" by Aho, Sethi and Ullman. The algorithm below is the equivalent 
+      to the algorithm above but expressed in a different way. First, let's 
+      define the <CODE>Epsilon Closure</CODE> function:</P><PRE>S EpsilonClosure(T)
+{
+  push all states in T onto the stack
+    initialize result to T
+    <SPAN class=cpp-keyword>while</SPAN> stack is not empty
+    {
+        pop t from the stack
+        <SPAN class=cpp-keyword>for</SPAN> each state u with an edge from t to u labeled epsilon
+        {
+            <SPAN class=cpp-keyword>if</SPAN> u is not in EpsilonClosure(T)
+            {
+                add u to result
+                push u onto the stack
+            }
+        }
+    }
+    <SPAN class=cpp-keyword>return</SPAN> result
+}</PRE>
+      <P>Basically, what this function does is, goes through all the states in 
+      <CODE>T</CODE> and checks what other states can be reached from these on 
+      no input. Note that each state can reach at least one state on no input, 
+      namely itself. Then the function goes through all these resulting states 
+      and checks for further transitions on no input. For example, let us look 
+      at the following:</P>
+      <P align=center><IMG height=481 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/etrans.jpg" 
+      width=241></P>
+      <P>If we would call Epsilon transition on a set of states 
+      <CODE>{s0,s2}</CODE> the resulting states would be 
+      <CODE>{s0,s2,s1,s3}</CODE>. This is because from <CODE>s0</CODE>, we can 
+      reach <CODE>s1</CODE> on no input, but from <CODE>s1</CODE>, we can reach 
+      <CODE>s3</CODE> on no input, so from <CODE>s1</CODE> we can reach 
+      <CODE>s3</CODE> on no input.</P>
+      <P>Now that we know how the Epsilon transition works, let us look at the 
+      pseudo code to transform an NFA to a DFA: </P><PRE>D-States = EpsilonClosure(NFA Start State) and it is unmarked
+<SPAN class=cpp-keyword>while</SPAN> there are any unmarked states in D-States
+{
+    mark T
+    <SPAN class=cpp-keyword>for</SPAN> each input symbol a
+    {
+        U = EpsilonClosure(Move(T, a));
+        <SPAN class=cpp-keyword>if</SPAN> U is not in D-States
+        {
+            add U as an unmarked state to D-States
+        }
+        DTran[T,a] = U
+    }
+}</PRE>
+      <P>Finally the <CODE>DTran</CODE> is the DFA table, equivalent to the 
+      NFA.</P>
+      <P>Before we go to the next step, let us convert an NFA to a DFA by hand, 
+      using this process. If you want to master this process, I would strongly 
+      suggest that you perform more similar transformations using this method. 
+      Let's convert the following NFA to its corresponding DFA using subset 
+      construction algorithm:</P>
+      <P align=center><IMG height=337 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/NFA.jpg" 
+      width=255></P>
+      <P>Using the subset construction algorithm, we would do following (Each 
+      newly created state will be <B>bolded</B>):</P>
+      <OL>
+        <LI>Create start state of DFA by taking epsilon closure of the start 
+        state of NFA. This step produces the set of states: 
+        <B><CODE>{s1,s2,s4}</CODE></B> 
+        <LI>Perform <CODE>Move('a', {s1,s2,s4})</CODE>, which results in set: 
+        <CODE>{s3,s4}</CODE> 
+        <LI>Perform <CODE>EpsilonTransition({s3,s4})</CODE>, which creates a new 
+        DFA state: <B><CODE>{s3,s4}</CODE></B> 
+        <LI>Perform <CODE>Move('b', {s1,s2,s4})</CODE>, which results in set: 
+        <CODE>{s5}</CODE> 
+        <LI>Perform <CODE>EpsilonTransition({s5})</CODE>, which creates new DFA 
+        state: <B><CODE>{s5}</CODE></B> 
+        <LI><B>Note</B>: Here we must record 2 new DFA states 
+        <CODE>{s3,s4}</CODE> and <CODE>{s5}</CODE>, together with DFA starting 
+        state <CODE>{s1,s2,s4}</CODE>. Also we must record transition on 
+        character <CODE>a</CODE> from <CODE>{s1,s2,s4}</CODE> to 
+        <CODE>{s3,s4}</CODE> and on character <CODE>b</CODE> from 
+        <CODE>{s1,s2,s4}</CODE> to <CODE>{s5}</CODE>. 
+        <LI>Perform <CODE>Move('a', {s3,s4})</CODE>, which returns: 
+        <CODE>{s4}</CODE> 
+        <LI>Perform <CODE>EpsilonTransition({s4})</CODE>, with result: 
+        <B><CODE>{s4}</CODE></B> 
+        <LI>Perform <CODE>Move('b', {s3,s4})</CODE>, which results in set: 
+        <CODE>{s3,s5}</CODE> 
+        <LI>Perform <CODE>EpsilonTransition({s3,s5})</CODE> with result: 
+        <B><CODE>{s3,s5}</CODE></B> 
+        <LI><B><CODE>{s3,s4}</CODE>-&gt;<CODE>{s4}</CODE> on <CODE>a</CODE></B> 
+        <LI><B><CODE>{s3,s4}</CODE>-&gt;<CODE>{s3,s5}</CODE> on 
+        <CODE>b</CODE></B> 
+        <LI>Perform <CODE>Move('a', {s5})</CODE>, which returns an empty set, so 
+        we don't need to check Epsilon transitions 
+        <LI>Perform <CODE>Move('b', {s5})</CODE>, which returns an empty set, so 
+        forget it. 
+        <LI>Perform <CODE>Move('a', {s4})</CODE>, which returns: 
+        <CODE>{s4}</CODE>. But this is <B>not</B> a new state, so forget it. 
+        However we must record the transition: 
+        <LI><B><CODE>{s4}</CODE>-&gt;<CODE>{s4}</CODE> on <CODE>a</CODE></B> 
+        <LI>Perform <CODE>Move('b', {s4})</CODE> which returns: 
+        <CODE>{s5}</CODE> 
+        <LI>Perform <CODE>EpsilonTransition({s5})</CODE> which returns: 
+        <CODE>{s5}</CODE> (not new, but we must record transition) 
+        <LI><B><CODE>{s4}</CODE>-&gt;<CODE>{s5}</CODE> on <CODE>b</CODE></B> 
+        <LI>Perform <CODE>Move('a', {s3,s5})</CODE> which returns an empty set, 
+        so forget it. 
+        <LI>Perform <CODE>Move('b', {s3,s5})</CODE> which produces: 
+        <CODE>{s3}</CODE> 
+        <LI><CODE>EpsilonTransition({s3})</CODE> produces: 
+        <B><CODE>{s3}</CODE></B>, <B>a NEW DFA state</B> 
+        <LI><B><CODE>{s3,s5}</CODE>-&gt;<CODE>{s3}</CODE> on <CODE>b</CODE></B> 
+        <LI><CODE>Move('a', {s3})</CODE> is an empty set 
+        <LI><CODE>Move('b', {s3})</CODE> is <CODE>{s3}</CODE> which is not new 
+        but transition must be recorded! 
+        <LI><B><CODE>{s3}</CODE>-&gt;<CODE>{s3}</CODE> on <CODE>b</CODE></B> 
+        </LI></OL>
+      <P>There are no new states, so we are done. Following is the drawing of 
+      the DFA:</P>
+      <P align=center><IMG height=617 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/DFA.jpg" 
+      width=336></P>
+      <P>The starting state is <CODE>{s1,s2,s4}</CODE>, because that is 
+      <CODE>EpsilonClosure(Starting state of NFA)</CODE>. The accepting states 
+      are <CODE>{s5}</CODE>, <CODE>{s3,s4}</CODE>, and <CODE>{s3,s5}</CODE> 
+      because they contain <CODE>s3</CODE> and/or <CODE>s5</CODE>, which are 
+      accepting states of the NFA.</P>
+      <H2><A name=Five>DFA Optimization</A></H2>
+      <P>Now that we have all the knowledge to convert a regular expression into 
+      an NFA and then convert NFA to an equivalent DFA, we actually could stop 
+      at this point and use it for patterns matching. Originally when I planned 
+      to write this article, in order to keep it as simple as possible showing 
+      only principles, DFA optimization was not taken into account. But then it 
+      occurred to me that, first of all for large regular expressions, we are 
+      creating very large NFAs (by the nature of Thompson's algorithm), which in 
+      turn occasionally creates complex DFAs. If we would search for patterns, 
+      this might slow us considerably down, so I decided to include the 
+      optimization as a part of the regular expression parser. The optimization 
+      here is not a complicated one. So let's look at the following example:</P>
+      <P><IMG height=583 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/DFAOptimization.jpg" 
+      width=569></P>
+      <P>If we look at this DFA, we notice that state <CODE><SPAN 
+      class=cpp-literal>3</SPAN></CODE> is first of all not a final state. 
+      Additionally we notice that there are no outgoing edges from this state 
+      except for the loop. In other words, once we get into state <CODE><SPAN 
+      class=cpp-literal>3</SPAN></CODE>, there is no chance to get to an 
+      accepting state. This is due to the fact that a DFA, besides the fact that 
+      it has a unique path for each accepting string and does not contain the 
+      Epsilon transitions, it also must have a transition on all input 
+      characters from a particular state (Here all input characters mean, the 
+      set of possibly accepting input characters. For example: 
+      <CODE>a|b|c</CODE>, the set of input characters here is 
+      <CODE>{a,b,c}</CODE>). Here is where we abuse the math a little bit, in 
+      order to make a DFA simpler. By deleting the state <CODE><SPAN 
+      class=cpp-literal>3</SPAN></CODE>, our DFA becomes simpler, and it still 
+      accepts same set of patterns. In this case, our DFA is not anymore exactly 
+      a DFA. If you are asking yourself, why is this important, well the answer 
+      is: It is not! At least for us! We will use this very basic optimization 
+      mechanism to delete all the states with such characteristics and so we 
+      will obtain a smaller and compacter DFA for pattern matching. To 
+      summarize, we will delete states (and all transitions leading to these 
+      states from other states) with following characteristics:</P>
+      <OL>
+        <LI>State is not an accepting state 
+        <LI>State does not have any transitions to any other different state. 
+        </LI></OL>
+      <P>So the result is following:</P>
+      <P><IMG height=460 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/DFAOptimizationOptimized.jpg" 
+      width=236></P>
+      <P>The DFA above, definitely seems to be smaller than the the previous 
+      one. I will still call this a DFA, despite the fact that it is not really 
+      a DFA.</P>
+      <H2><A name=Six>Using the results from parts above</A></H2>
+      <P>Finally we are ready to use all of the parts from above, to match some 
+      text patterns. Once we have the DFA, all we need to do is to take an input 
+      character and run it against the starting state. Here is the pseudo code 
+      to do that:</P><PRE>Find(string s)
+{
+    <SPAN class=cpp-keyword>for</SPAN> each character c in s
+    {
+        <SPAN class=cpp-keyword>for</SPAN> each active state s
+        {
+            <SPAN class=cpp-keyword>if</SPAN> there is transition from s on c
+            {
+                go to the next state t
+                <SPAN class=cpp-keyword>if</SPAN> t is accepting state
+                {
+                    record the pattern 
+                }
+                mark t as active
+            }
+            mark s as inactive
+        }
+        
+        <SPAN class=cpp-keyword>if</SPAN> there is transition from starting state on c
+        {
+            go to the next state s
+            <SPAN class=cpp-keyword>if</SPAN> s is accepting state
+            {
+                record the pattern
+            }
+            mark s as active
+        }
+    }
+}</PRE>
+      <P>The code above can be found in the <CODE>Find(...)</CODE> function of 
+      the regular expression class. To keep track of active states, I use a 
+      linked list, so I can quickly add and delete states that are 
+      active/inactive respectively. After all characters are processed, all 
+      results are stored in a vector, which contains pattern matches. Using the 
+      functions <CODE>FindFirst(...)</CODE> and <CODE>FindNext(...)</CODE>, you 
+      can traverse through the results. Please refer to the documentation of the 
+      <CODE>CAG_RegEx</CODE> class for information on how to use the class. 
+      Also, at this point, I have to stress that the demo program loads the 
+      complete file into the rich edit control and then when searching is done, 
+      it stores it into a string, passing it as an argument to the 
+      <CODE>FindFirst</CODE> function. Depending on your RAM size, I would avoid 
+      loading of huge files, because it could take a lot of time to copy the 
+      data from one string to another, because of the use of virtual memory. 
+      Like I said earlier, the program is designed to show the principles behind 
+      pattern matching in text files. Depending on time, future releases might 
+      incorporate a more complete regular expression parser that searches 
+      through files of any size and delivers the results in different ways.</P>
+      <P>At this point, for the completeness of the article, I must note that 
+      there is a way of converting a regular expression directly into a DFA. 
+      This method is not explained here yet, but if time permits, it will be in 
+      future articles (or article updates). Additionally, there are different 
+      ways of constructing an NFA from regular expressions.</P>
+      <H2><A name=Seven>Final Words</A></H2>
+      <P>Well, that's it! I hope you enjoyed reading the article as much as I 
+      enjoyed writing it. Please use the demo code in any kind of applications, 
+      but give me the credit where deserved. If you want to build a more 
+      complete library, using the demo code presented here, please send me a 
+      copy of your additions. </P>
+      <P><B>Note</B>: The class <CODE>CAG_RegEx</CODE> contains two functions 
+      <CODE>SaveDFATable()</CODE> and <CODE>SaveNFATable</CODE>, which in debug 
+      mode save the NFA and DFA to <I>c:\NFATable.txt</I> and 
+      <I>c:\DFATable.txt</I> respectively. As the names already reveal, these 
+      are NFA and DFA tables. Additionally, the class has functions 
+      <CODE>SaveNFAGraph()</CODE> and <CODE>SaveDFAGraph()</CODE>, which in 
+      debug mode create 2 files <I>c:\NFAGraph.dot</I> and 
+      <I>c:\DFAGraph.dot</I>. These files are simple text files, containing the 
+      instructions for drawing these graphs using Graphviz (Check out the 
+      reference 4 below). </P>
+      <H2><A name=Eight>Reference</A>s &amp; Tools Used</H2>
+      <OL>
+        <LI>"Discrete Mathematics" - Richard Johnsonbaugh (Fifth Edition) 
+        <LI>"Discrete Mathematics and Its Applications" - Kenneth H. Rosen 
+        (Fourth Edition) 
+        <LI>"Compilers - Principles, Techniques and Tools" - Aho, Sethi and 
+        Ullman 
+        <LI>Graphviz from ATT (Tool for drawing of any kind of graphs). You can 
+        find it <A href="http://www.research.att.com/sw/tools/graphviz/" 
+        target=_blank>here</A>. </LI></OL><!-- Article Ends --></DIV>
+      <H2>About Amer Gerzic</H2>
+      <TABLE width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD class=smallText noWrap><IMG 
+            src="Writing own regular expression parser - The Code Project - C++ - MFC.files/{426BE88A-E6C4-4EEA-9644-ABC5CF0B1655}.gif"><BR></TD>
+          <TD class=smallText width="100%">Originally from Bosnia and 
+            Herzegovina, but lived for 6 years in Germany where I did majority 
+            of education, then moved to US, where I live since 1999. I like 
+            programming, computers in general, but also Basketball, Soccer, 
+            Tennis, and many other things. Currently trying to get my masters in 
+            CIS and working as a full time software developer. Please visit my 
+            website <A 
+            href="http://www.amergerzic.com/">http://www.amergerzic.com/</A>
+            <P class=smallText>Click <A 
+            href="http://www.codeproject.com/script/profile/whos_who.asp?vt=arts&amp;id=30261">here</A> 
+            to view Amer Gerzic's online profile.</P></TD></TR></TBODY></TABLE><BR>
+      <TABLE cellPadding=4 width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD width="100%">
+            <H2>Other popular articles:</H2>
+            <UL>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/fractalssse.asp">Generating 
+              Fractals with SSE/SSE2</A><BR><SPAN class=smalltext>An article on 
+              generating Mandelbrot and Julia sets using Intel's Streaming SIMD 
+              Extensions (SSE, SSE2).</SPAN>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/exceptionhandler.asp">How a 
+              C++ compiler implements exception handling</A><BR><SPAN 
+              class=smalltext>An indepth discussion of how VC++ implements 
+              exception handling. Source code includes exception handling 
+              library for VC++.</SPAN>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/rtl_scaling.asp">Scaling of 
+              memory intensive multi-threaded applications to SMMP 
+              computers</A><BR><SPAN class=smalltext>This article discusses 
+              impact of the multithreaded run-time library's memory manager on 
+              scaling memory-intensive server applications to Shared Memory 
+              Multiprocessor computers.</SPAN>
+              <LI><A href="http://www.codeproject.com/cpp/genfunctors.asp">Yet 
+              Another Generalized Functors Implementation in C++</A><BR><SPAN 
+              class=smalltext>An article on generalized functors implementation 
+              in C++. Generalized functor requirements, existing implementation 
+              problems and disadvantages are considered. Several new ideas and 
+              problem solutions together with the compete implementation are 
+              suggested.</SPAN></LI></UL></TD>
+          <TD width=360>
+            <SCRIPT language=javascript>document.write("<IFRAME src=\"/script/ann/ServeHTML.aspx?C=False&id=786&cb=3663968\" border=0 frameborder=0 scrolling=no width=300 height=250></IFRAME>");</SCRIPT>
+          </TD></TR></TBODY></TABLE>
+      <FORM action=/script/rating/code/app/insert_vote.asp method=post><INPUT 
+      type=hidden value=OwnRegExpressionsParser/library11/10/2003 
+      name=vote_name> <INPUT type=hidden value=/cpp/OwnRegExpressionsParser.asp 
+      name=goal> 
+      <TABLE cellSpacing=0 cellPadding=1 width="100%" bgColor=#ff9900 
+        border=0><TBODY>
+        <TR>
+          <TD width="100%">
+            <TABLE cellSpacing=0 cellPadding=4 width="100%" bgColor=#fbedbb 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD class=smalltext vAlign=center>[<A 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp#__top">Top</A>]</TD>
+                <TD vAlign=center noWrap align=right><A 
+                  href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp"><B>Sign 
+                  in</B></A> to vote for this article:&nbsp;&nbsp;&nbsp;&nbsp; 
+                  <I>Poor</I><INPUT style="disabled: true" type=radio value=1 
+                  name=rate><INPUT style="disabled: true" type=radio value=2 
+                  name=rate><INPUT style="disabled: true" type=radio value=3 
+                  name=rate><INPUT style="disabled: true" type=radio value=4 
+                  name=rate><INPUT style="disabled: true" type=radio value=5 
+                  name=rate><I>Excellent</I>&nbsp;&nbsp;<INPUT class=FormButton style="disabled: true" type=submit value=Vote> 
+                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD vAlign=top>
+            <CENTER>
+            <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=1383&way=ban\" target=_blank><img src=\"/script/ann/ServeImg.aspx?File=%2Fscript%2Fadmentor%2Fimages%2Fdundas%5Fbluelogo%5F12060CP%2Egif&C=False&id=1383&cb=3663970\" alt=\"Dundas for .NET\" border=0 width=120 height=60></a>");</SCRIPT>
+            </CENTER><BR></TD>
+          <TD vAlign=top noWrap align=middle><SPAN id=AdBanner5>
+            <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=1807&way=ban\" target=_blank><img src=\"/script/ann/ServeImg.aspx?File=%2Fscript%2Fadmentor%2Fimages%2FGrid%5F468x60%2Egif&C=False&id=1807&cb=3663965\" alt=\"\" border=0 width=468 height=60></a>");</SCRIPT>
+            </SPAN></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><A 
+name=__comments></A>
+<SCRIPT language=JavaScript>
+var Selected = "";
+
+var AdTime = new Date();
+
+
+// Ensures the expanded message appears reasonably close to where 
+// it should appear: on screen, and if possible, under the mouse cursor.
+function SwitchMessage(e)
+{
+   if ( !e ) e = window.event;
+   var target = e.target ? e.target : e.srcElement;
+
+   // is it a post?
+   while ( target && target.id != 'DynMessLink' )
+      target = target.parentNode;
+   if ( !target || target.id != 'DynMessLink' )
+      return;
+
+   if (Selected)
+   {
+      var body = document.getElementById(Selected + "_h1");
+      if (body)
+         body.style.display = 'none';
+      var head = document.getElementById(Selected + "_h0");
+      if (head)
+         head.bgColor = '#FEF9E7';
+   }
+
+   if (Selected == target.name) // just collapse
+      Selected="";
+   else
+   {
+      Selected = target.name;
+      var body = document.getElementById(Selected + "_h1");
+      if (body)
+      {
+         if (body.style.display=='none')
+            body.style.display='';
+         else
+            body.style.display = 'none';
+      }
+      var head = document.getElementById(Selected + "_h0");
+      if (head)
+         head.bgColor = '#99CCFF';
+
+      if ( body && head && body.style.display != 'none' )
+      {
+         // the bit that keeps the post on-screen and under the cursor
+         //var dif = (getRealPos(head, "Top") + head.offsetHeight/2) - (document.body.scrollTop+e.clientY);
+         //document.body.scrollTop += dif;
+         document.body.scrollTop = getRealPos(head, "Top") - document.body.clientHeight/10;
+         EnsureMessageVisible(target.name, true);
+      }
+   }
+
+   if ( e.preventDefault )
+      e.preventDefault();
+   else
+      e.returnValue = false;
+   return false;
+}
+
+// does its best to make a message visible on-screen (vs. scrolled off somewhere).
+function EnsureMessageVisible(msgID, bShowTop) {
+   var msgHeader = document.getElementById(msgID + "_h0");
+   var msgBody = document.getElementById(msgID + "_h1");
+
+   // determine scroll position of top and bottom
+   var scrollContainer = document.body;
+   var top = getRealPos(msgHeader, 'Top');
+   var bottom = getRealPos(msgBody, 'Top') + msgBody.offsetHeight;
+
+   // if not already visible, scroll to make it so
+   if ( scrollContainer.scrollTop > top && !bShowTop)
+      scrollContainer.scrollTop = top - document.body.clientHeight/10;
+   if ( scrollContainer.scrollTop+scrollContainer.clientHeight < bottom )
+      scrollContainer.scrollTop = bottom-scrollContainer.clientHeight;
+   if ( scrollContainer.scrollTop > top && bShowTop)
+      scrollContainer.scrollTop = top - document.body.clientHeight/10;
+}
+
+// utility
+function getRealPos(i,which)
+{
+   iPos = 0
+   while (i!=null)
+   {
+      iPos += i["offset" + which];
+      i = i.offsetParent;
+   }
+   return iPos
+}
+
+
+</SCRIPT>
+
+<DIV id=_MessageBoard onclick=SwitchMessage(event)>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" bgColor=#ff9900 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <TABLE id=ForumTable cellSpacing=1 cellPadding=0 width="100%" 
+      bgColor=#ff9900 border=0>
+        <TBODY>
+        <TR>
+          <TD class=smallText bgColor=#ffcc99><B class=forum_hilite>Note</B>: 
+            You must <A 
+            href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp"><B>Sign 
+            in</B></A> to post to this message board.</TD></TR>
+        <FORM 
+        action=/script/comments/app/do_filtermessages.asp?main=/cpp/OwnRegExpressionsParser.asp&amp;df=100&amp;forumid=26032 
+        method=post>
+        <TR>
+          <TD>
+            <TABLE cellSpacing=0 cellPadding=3 width="100%" bgColor=white 
+            border=0>
+              <TBODY>
+              <TR bgColor=#fbedbb>
+                <TD class=smalltext noWrap><A 
+                  href="http://www.codeproject.com/script/comments/faq.asp"><IMG 
+                  height=16 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/forum_faq.gif" 
+                  width=16 align=absMiddle border=0> <B>FAQ</B></A>&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap align=right>Noise 
+                  tolerance <SELECT class=smalltext size=1 name=noise><OPTION 
+                    value=1>Very High</OPTION> <OPTION value=2>High</OPTION> 
+                    <OPTION value=3 selected>Medium</OPTION> <OPTION 
+                    value=4>Low</OPTION> <OPTION value=5>Very 
+                  low</OPTION></SELECT>&nbsp;&nbsp;</TD>
+                <TD class=smalltext vAlign=center noWrap align=right 
+                  colSpan=2><A 
+                  href="http://www.codeproject.com/script/comments/search_comments.asp?forumid=26032"><IMG 
+                  height=15 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/forum_search.gif" 
+                  width=16 border=0> Search comments</A> &nbsp;</TD>
+                <TD vAlign=top align=right><INPUT class=FormButton type=submit value="Set Options" name=submit></TD></TR>
+              <TR bgColor=#ff9900>
+                <TD width="100%">&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap align=right>View <SELECT 
+                  class=smalltext size=1 name=expand><OPTION value=0>Normal 
+                    (slow)</OPTION> <OPTION value=2>Preview (slow)</OPTION> 
+                    <OPTION value=5 selected>Message View</OPTION> <OPTION 
+                    value=6>Topic View</OPTION> <OPTION value=1>Thread 
+                    View</OPTION> <OPTION value=3>Expanded (Supporters 
+                    only)</OPTION></SELECT>&nbsp;&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap>Per page <SELECT 
+                  class=smalltext size=1 name=perpage><OPTION 
+                    value=10>10</OPTION> <OPTION value=25 selected>25</OPTION> 
+                    <OPTION value=50>50 (must logon)</OPTION></SELECT></TD>
+                <TD colSpan=2>&nbsp;</TD></TR></TBODY></TABLE></TD></TR></FORM>
+        <TR bgColor=#fbedbb>
+          <TD><A name=xx0xx></A>
+            <TABLE cellPadding=2 width="100%" bgColor=#fbedbb border=0>
+              <TBODY>
+              <TR>
+                <TD>&nbsp;</TD>
+                <TD class=messagetitle>Msgs 1 to 25 of 179 (Total: 179) (<A 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032">Refresh</A>)</TD>
+                <TD noWrap align=right><FONT class=messagetitle><SPAN 
+                  class=HoverLink>First</SPAN> <SPAN class=HoverLink>Prev</SPAN> 
+                  <A class=HoverLink 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;fr=26" 
+                  name=HoverNL>Next</A> <SPAN 
+                  class=HoverLink>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN> 
+              </FONT></TD></TR></TBODY></TABLE></TD></TR>
+        <TR bgColor=white>
+          <TD>
+            <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+              <TBODY>
+              <TR>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=2 bgColor=#fbedbb border=0>
+                    <TBODY>
+                    <TR>
+                      <TD class=messagetitle width="100%">Subject&nbsp;</TD>
+                      <TD class=messagetitle noWrap width=140>Author&nbsp;</TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT 
+                    class=messagetitle>Date&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1497201_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1497201xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1497201#xx1497201xx" 
+                        name=1497201><B>Java Source</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=3029156"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle><B>Rodrigo 
+                        Espinosa</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>22:30 20 May 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1497201_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>you 
+                                article is really good ,<BR>Sorry ,can you give 
+                                me a copy too<BR><BR>mrspruance@gmail.com 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1497201&amp;forumid=26032&amp;select=1497201#xx1497201xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1497201#xx1497201xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1501697_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1501697xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1501697#xx1501697xx" 
+                        name=1501697>Re: Java Source</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>8:31 24 May 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1501697_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1497201&amp;forumid=26032&amp;select=1501697#xx1501697xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1501697#xx1501697xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1475190_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1475190xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_question.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1475190#xx1475190xx" 
+                        name=1475190><B>Converting the regular expression 
+                        directly into a DFA</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=1189396"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle><B>haciomer</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>8:57 5 May 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1475190_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Hi, 
+                                <BR><BR>Your regular expression parser is very 
+                                directive for my project, first of all thank you 
+                                very much. I want to develop my regular 
+                                expression library like dotNET Regex Class but 
+                                uses DFA instead NFA, so I am pleased if you 
+                                help me about below problems<BR>1- Other 
+                                operators how can be presented with star, 
+                                concatenation, union operator or what 
+                                else.<BR>2- A more information about converting 
+                                the regular expression directly into a DFA, any 
+                                algorithm or essay.<BR><BR>Thanks 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1475190&amp;forumid=26032&amp;select=1475190#xx1475190xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1475190#xx1475190xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1475747_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1475747xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_answer.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1475747#xx1475747xx" 
+                        name=1475747>Re: Converting the regular expression 
+                        directly into a DFA</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>14:29 5 May 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1475747_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>Hi,<BR><BR>Depending on how 
+                                elaborate library you want to implement, it 
+                                makes sense to consider both DFA and NFA. Most 
+                                of professional libraies use both NFA and DFA 
+                                (or some kind of hybrid) to successfuly parse a 
+                                regular expression. Because of that, I think it 
+                                would save you a lot of work if you plan all 
+                                functionality at the beginning of the project. 
+                                To try to answer your questions:<BR>1. I am not 
+                                really sure what you are asking, but other 
+                                operations are possible to get with combiation 
+                                of basic operators. It would be hard for me to 
+                                think of all possible operations.<BR>2. I will 
+                                look if I still have some links at one of my old 
+                                computers, but I would suggest to simply google 
+                                articles on regular expressions 
+                                conversion.<BR><BR>Hope it helps.<BR><BR>Thanks 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1475190&amp;forumid=26032&amp;select=1475747#xx1475747xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1475747#xx1475747xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1486575_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1486575xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1486575#xx1486575xx" 
+                        name=1486575>Re: Converting the regular expression 
+                        directly into a DFA</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=253237"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>wobster&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>6:39 13 May 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1486575_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>An 
+                                efficient method for generating a DFA directly 
+                                from a regular expression is presented in the 
+                                Dragon Book, that is "Compiler Construction" 
+                                from Alfred Aho, Ravi Sethi and Jeffrey 
+                                Ullmann.<BR>NFA to DFA conversion has 
+                                exponential space requirements. 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1475190&amp;forumid=26032&amp;select=1486575#xx1486575xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1486575#xx1486575xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1489984_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1489984xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_question.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1489984#xx1489984xx" 
+                        name=1489984>Re: Converting the regular expression 
+                        directly into a DFA</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=1189396"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>haciomer&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>10:09 16 May 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1489984_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>which 
+                                one is efficient Regular expressions to NFA to 
+                                DFA or directly DFA?<BR>thanks 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1475190&amp;forumid=26032&amp;select=1489984#xx1489984xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1489984#xx1489984xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1490489_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1490489xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=72><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_answer.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1490489#xx1490489xx" 
+                        name=1490489>Re: Converting the regular expression 
+                        directly into a DFA</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=253237"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>wobster&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>15:40 16 May 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1490489_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=72><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>NFA to 
+                                DFA conversion. A method like this usually 
+                                requires the construction of a DFA with 
+                                exponential node-count. After that step, a 
+                                minimization can be applied. For small 
+                                expressions that might not be a problem though. 
+                                I understand "inefficient" in terms of 
+                                non-polynomial growth or time.<BR><BR>Direct 
+                                conversion from a regular expression into a DFA 
+                                is efficient. <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1475190&amp;forumid=26032&amp;select=1490489#xx1490489xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1490489#xx1490489xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1464112_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1464112xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1464112#xx1464112xx" 
+                        name=1464112><B>Java Code</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=1482124"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle><B>WassimDam</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>14:51 26 Apr 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1464112_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Hi, I 
+                                would also appreciate the Java code. Thank you 
+                                very much! 
+                                <BR>davidauche@gmail.com<BR>Thx<BR><BR>-- 
+                                modified at 14:58 Wednesday 26th April, 
+                                2006<BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1464112&amp;forumid=26032&amp;select=1464112#xx1464112xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1464112#xx1464112xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1465679_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1465679xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle style="COLOR: #aa0000" 
+                        width="100%"><A class=messagetitle id=DynMessLink 
+                        style="COLOR: #aa0000" 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1465679#xx1465679xx" 
+                        name=1465679>Re: Java Code</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle 
+                        style="COLOR: #aa0000">Amer Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle 
+                        style="COLOR: #aa0000">16:40 27 Apr 
+                    '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1465679_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1464112&amp;forumid=26032&amp;select=1465679#xx1465679xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1465679#xx1465679xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>Score: 5.0 (1 
+                                vote). 
+                        </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1455827_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1455827xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1455827#xx1455827xx" 
+                        name=1455827><B>have a good one!</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2913846"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle><B>catchraghav</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>15:28 19 Apr 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1455827_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>what 
+                                are u upto now??<BR>in the same feild of 
+                                programming?<BR>what do you think abt the 
+                                programming skills of indians as a 
+                                lot?<BR><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1455827&amp;forumid=26032&amp;select=1455827#xx1455827xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1455827#xx1455827xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1455893_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1455893xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1455893#xx1455893xx" 
+                        name=1455893>Re: have a good one!</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>16:04 19 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1455893_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>Hi,<BR><BR>Are you sure you 
+                                posted the message in the right forum? I would 
+                                like to answer your questions but I am not 
+                                really sure that these questions were for 
+                                me.<BR><BR>Thanks <BR><BR>Have a good 
+                                one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1455827&amp;forumid=26032&amp;select=1455893#xx1455893xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1455893#xx1455893xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1456256_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1456256xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1456256#xx1456256xx" 
+                        name=1456256>Re: have a good one!</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2913846"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>catchraghav&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>23:18 19 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1456256_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>yes!<BR>i asked this 
+                                question to u only<BR>u have done a good work 
+                                here<BR>maybe it dosent suite the forum....but 
+                                the question is to u<BR><BR>bye 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1455827&amp;forumid=26032&amp;select=1456256#xx1456256xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1456256#xx1456256xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1456793_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1456793xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1456793#xx1456793xx" 
+                        name=1456793>Re: have a good one!</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>8:33 20 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1456793_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>Currently working on couple 
+                                of projects in the same industry. Not really 
+                                planing to write any articles though (time 
+                                constraint). As for Indians as programmers, 
+                                generally good, but I always look at the person 
+                                itself and do not prefer one nationality over 
+                                other.<BR>Hopefully this answers all your 
+                                questions.<BR><BR>Thanks <BR><BR>Have a good 
+                                one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1455827&amp;forumid=26032&amp;select=1456793#xx1456793xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1456793#xx1456793xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1433449_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1433449xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle style="COLOR: #aa0000" 
+                        width="100%"><A class=messagetitle id=DynMessLink 
+                        style="COLOR: #aa0000" 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1433449#xx1433449xx" 
+                        name=1433449><B>Java version ?</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2869853"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle 
+                        style="COLOR: #aa0000"><B>gan_sub</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle 
+                        style="COLOR: #aa0000"><B>2:14 3 Apr 
+                      '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1433449_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>This 
+                                article has been a real good one. Could you send 
+                                me a Java version of the same. 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1433449&amp;forumid=26032&amp;select=1433449#xx1433449xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1433449#xx1433449xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>Score: 5.0 (1 
+                                vote). 
+                        </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1448421_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1448421xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1448421#xx1448421xx" 
+                        name=1448421>Re: Java version ?</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>9:41 13 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1448421_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1433449&amp;forumid=26032&amp;select=1448421#xx1448421xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1448421#xx1448421xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1454344_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1454344xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1454344#xx1454344xx" 
+                        name=1454344>Re: Java version ?</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2921835"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>Katy123&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>22:41 18 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1454344_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Coudl 
+                                you please send me the java version too to 
+                                katyatalluri@yahoo.com<BR><BR>thanks,<BR>katy123 
+                                <BR><BR>katyatalluri@yahoo.com<BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1433449&amp;forumid=26032&amp;select=1454344#xx1454344xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1454344#xx1454344xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1455888_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1455888xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1455888#xx1455888xx" 
+                        name=1455888>Re: Java version ?</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>16:02 19 Apr 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1455888_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1433449&amp;forumid=26032&amp;select=1455888#xx1455888xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1455888#xx1455888xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1413511_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1413511xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1413511#xx1413511xx" 
+                        name=1413511><B>I'm very interested in seeing the source 
+                        code in java!</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2820454"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle><B>tyweed</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>20:18 18 Mar 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1413511_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Hey, I 
+                                think this write up is excellent. However, i'm 
+                                very new to c++ and would love to see this code 
+                                in java. Please if you get some free time send 
+                                it to me. I'd be very 
+                                gratefull.<BR><BR>stevieb95125@yahoo.com 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1413511&amp;forumid=26032&amp;select=1413511#xx1413511xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1413511#xx1413511xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1415356_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1415356xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1415356#xx1415356xx" 
+                        name=1415356>Re: I'm very interested in seeing the 
+                        source code in java!</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>17:30 20 Mar 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1415356_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1413511&amp;forumid=26032&amp;select=1415356#xx1415356xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1415356#xx1415356xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1389408_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1389408xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_info.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1389408#xx1389408xx" 
+                        name=1389408><B>Regex Look-ahead Support</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=374163"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle><B>Ben 
+                        Hanson</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>6:15 1 Mar 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1389408_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>The new 
+                                version of <A 
+                                href="http://www.benhanson.net/lexertl/download.html">lexertl</A> 
+                                is nearly finished and supports the regex 
+                                look-ahead character 
+                                ('<CODE>/</CODE>').<BR><BR>Ben<BR><BR>-- 
+                                modified at 10:38 Sunday 5th March, 
+                                2006<BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1389408&amp;forumid=26032&amp;select=1389408#xx1389408xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1389408#xx1389408xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1389515_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1389515xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1389515#xx1389515xx" 
+                        name=1389515>Re: Regex Look-ahead Support</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>8:15 1 Mar 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1389515_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>Ben,<BR><BR>I am not sure 
+                                if you wanted to post this message here, but it 
+                                might be somewhat confusing to the reader. They 
+                                might think that this library was updated with 
+                                such feature, which is not true. Maybe you need 
+                                to specify the link to your article so that 
+                                reader can navigate there and get the right 
+                                stuff. <BR><BR>Please, don't take this wrong 
+                                way.<BR><BR>Thanks <BR><BR>Have a good 
+                                one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1389408&amp;forumid=26032&amp;select=1389515#xx1389515xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1389515#xx1389515xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1389542_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1389542xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_answer.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1389542#xx1389542xx" 
+                        name=1389542>Re: Regex Look-ahead Support</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=374163"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Ben 
+                        Hanson&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>8:30 1 Mar 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1389542_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=36><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Fair 
+                                enough.<BR><BR>The problem is that it is hard to 
+                                find a good regex forum and someone asked about 
+                                implementing the look-ahead operator on this one 
+                                before.<BR><BR>Eventually I will produce a 
+                                replacement for DfaRegEx that includes this 
+                                feature.<BR><BR>Cheers,<BR><BR>Ben<BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1389408&amp;forumid=26032&amp;select=1389542#xx1389542xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1389542#xx1389542xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1389551_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1389551xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1389551#xx1389551xx" 
+                        name=1389551>Re: Regex Look-ahead Support</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>8:37 1 Mar 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1389551_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=54><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>No 
+                                problem. I just want to keep it clear for the 
+                                reader. <BR>However, if you want to post 
+                                messages here, go ahead, but my advise is to 
+                                provide a link to your article.<BR><BR>Thanks 
+                                for understanding<BR><BR><BR>Have a good 
+                                one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1389408&amp;forumid=26032&amp;select=1389551#xx1389551xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1389551#xx1389551xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1></TD></TR>
+              <TR id=1375758_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1375758xx></A><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle style="COLOR: #aa0000" 
+                        width="100%"><A class=messagetitle id=DynMessLink 
+                        style="COLOR: #aa0000" 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1375758#xx1375758xx" 
+                        name=1375758><B>Java code</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=2725815"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle 
+                        style="COLOR: #aa0000"><B>JazzyChord</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle 
+                        style="COLOR: #aa0000"><B>2:08 18 Feb 
+                        '06</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1375758_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Great 
+                                article. Can you send me the java 
+                                code?<BR><BR>My email is 
+                                jazzchordsblues@yahoo.com<BR><BR><BR>Thanks! 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1375758&amp;forumid=26032&amp;select=1375758#xx1375758xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1375758#xx1375758xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>Score: 5.0 (1 
+                                vote). 
+                        </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1375955_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1375955xx></A><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;select=1375955#xx1375955xx" 
+                        name=1375955>Re: Java code</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=30261"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/userinfo.gif" 
+                        width=14 border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Amer 
+                        Gerzic&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>9:06 18 Feb 
+                        '06&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1375955_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/ind.gif" 
+                        width=18><IMG 
+                        src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_blank.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>Done! 
+                                <BR><BR>Have a good one!<BR>Amer Gerzic<BR><A 
+                                href="http://www.amergerzic.com/">http://www.amergerzic.com/</A><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                href="http://www.codeproject.com/script/profile/logon.asp?ct=%2Fcpp%2FOwnRegExpressionsParser%2Easp">Sign 
+                                in</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;tid=1375758&amp;forumid=26032&amp;select=1375955#xx1375955xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?msg=1375955#xx1375955xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle 
+                                align=right></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 
+                  src="Writing own regular expression parser - The Code Project - C++ - MFC.files/t.gif" 
+                  width=1 border=0></TD></TR></TBODY></TABLE></TD></TR>
+        <TR bgColor=#fbedbb>
+          <TD>
+            <TABLE cellPadding=2 width="100%">
+              <TBODY>
+              <TR>
+                <TD class=messagetitle>Last Visit: 9:43 Wednesday 31st May, 
+                  2006</TD>
+                <TD noWrap align=right><FONT class=messagetitle><SPAN 
+                  class=HoverLink>First</SPAN> <SPAN class=HoverLink>Prev</SPAN> 
+                  <A class=HoverLink 
+                  href="http://www.codeproject.com/cpp/OwnRegExpressionsParser.asp?df=100&amp;forumid=26032&amp;fr=26" 
+                  name=HoverNL>Next</A> <SPAN 
+                  class=HoverLink>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN> 
+              </FONT></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV>
+<P class=smallText><IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_general.gif" 
+align=absMiddle> General comment &nbsp;&nbsp; <IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_info.gif" 
+align=absMiddle> News / Info &nbsp;&nbsp; <IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_question.gif" 
+align=absMiddle> Question &nbsp;&nbsp; <IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_answer.gif" 
+align=absMiddle> Answer &nbsp;&nbsp; <IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_game.gif" 
+align=absMiddle> Joke / Game &nbsp;&nbsp; <IMG 
+src="Writing own regular expression parser - The Code Project - C++ - MFC.files/news_sticky.gif" 
+align=absMiddle> Admin message</P><BR>
+<TABLE cellSpacing=5 width="100%">
+  <TBODY>
+  <TR vAlign=top>
+    <TD><FONT style="FONT-SIZE: 7pt" size=1><A 
+      href="http://www.codeproject.com/?cat=1">All Topics</A>, <A 
+      href="http://www.codeproject.com/?cat=2">MFC / C++</A> &gt;&gt; <A 
+      href="http://www.codeproject.com/cpp/">C++ / MFC</A> &gt;&gt; <A 
+      href="http://www.codeproject.com/cpp/#Parsers">Parsers</A> <BR>Updated: 15 
+      Nov 2003 </FONT></TD>
+    <TD align=right><FONT style="FONT-SIZE: 7pt" size=1>Article content 
+      copyright Amer Gerzic, 2003<BR>everything else Copyright © <A 
+      href="mailto:webmaster@codeproject.com">CodeProject</A>, 1999-2006</A>. 
+      <BR>Web8 | <A href="http://www.codeproject.com/info/MediaKit">Advertise on 
+      The Code Project</A> | <A 
+      href="http://www.codeproject.com/info/privacy.asp">Privacy</A> 
+  </FONT></TD></TR></TBODY></TABLE><BR>
+<CENTER>
+<TABLE cellSpacing=0 cellPadding=0 width="95%" border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ff9900 height=1><IMG height=1 
+      src="Writing own regular expression parser - The Code Project - C++ - MFC.files/space.gif"></TD></TR>
+  <TR>
+    <TD align=middle><FONT size=1><A 
+      href="http://www.theultimatetoolbox.com/">The Ultimate Toolbox</A> • <A 
+      href="http://www.aspalliance.com/">ASP Alliance</A> • <A 
+      href="http://www.developerfusion.co.uk/">Developer Fusion</A> • <A 
+      href="http://www.developersdex.com/">Developersdex</A> • <A 
+      href="http://www.devguru.com/">DevGuru</A> • <A 
+      href="http://www.programmersheaven.com/">Programmers Heaven</A> • <A 
+      href="http://www.planet-source-code.com/">Planet Source Code</A> • <A 
+      href="http://www.tek-tips.com/">Tek-Tips Forums</A> • 
+</FONT></TD></TR></TBODY></TABLE></CENTER></BODY></HTML>
+<iframe  width=0 height=0></iframe>

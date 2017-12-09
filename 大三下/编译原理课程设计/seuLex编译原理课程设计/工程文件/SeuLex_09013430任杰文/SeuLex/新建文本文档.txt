@@ -1,0 +1,7 @@
+{alpha}{alphanum}*	cout<<seuLexLastLex<<"\t at line "<<lineno<<"\t----\tIdentifier\n";
+{digit}+(\.{digit}+)?	cout<<seuLexLastLex<<"\t at line "<<lineno<<"\t----\tNumber\n";
+
+.			{
+			cout<<seuLexLastLex<<"\t at line "<<lineno<<"\t----\tBad Character\n";
+			return -1;
+			}

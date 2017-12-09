@@ -1,0 +1,100 @@
+0 : program-->declarations 
+
+1 : declarations-->declaration declarations 
+
+2 : declarations-->
+
+3 : declaration-->fun_declaration 
+
+4 : declaration-->var_declaration 
+
+5 : fun_declaration-->type NAME LPAR parameters RPAR block 
+
+6 : parameters-->more_parameters 
+
+7 : parameters-->
+
+8 : more_parameters-->parameter COMMA more_parameters 
+
+9 : more_parameters-->parameter 
+
+10 : parameter-->type NAME 
+
+11 : block-->LBRACE var_declarations statements RBRACE 
+
+12 : var_declarations-->var_declarations var_declaration var_declarations 
+
+13 : var_declarations-->
+
+14 : var_declaration-->type NAME SEMICOLON 
+
+15 : type-->INT 
+
+16 : type-->FLOAT 
+
+17 : type-->type TIMES 
+
+18 : type-->STRUCT LBRACE fields RBRACE 
+
+19 : fields-->field fields 
+
+20 : fields-->
+
+21 : field-->type NAME SEMICOLON 
+
+22 : statements-->statement SEMICOLON statements 
+
+23 : statements-->
+
+24 : ifhead-->IF LPAR exp RPAR 
+
+25 : ifstatement-->ifhead statement 
+
+26 : statement-->ifstatement 
+
+27 : statement-->ifstatement ELSE statement 
+
+28 : statement-->lexp ASSIGN exp 
+
+29 : statement-->RETURN exp 
+
+30 : statement-->block 
+
+31 : lexp-->var 
+
+32 : lexp-->lexp LBRACK exp RBRACK 
+
+33 : lexp-->lexp DOT NAME 
+
+34 : exp-->exp DOT NAME 
+
+35 : exp-->exp LBRACK exp RBRACK 
+
+36 : exp-->exp PLUS exp 
+
+37 : exp-->exp MINUS exp 
+
+38 : exp-->exp TIMES exp 
+
+39 : exp-->exp DIVIDE exp 
+
+40 : exp-->exp EQUAL exp 
+
+41 : exp-->LPAR exp RPAR 
+
+42 : exp-->MINUS exp 
+
+43 : exp-->var 
+
+44 : exp-->NUMBER 
+
+45 : exp-->NAME LPAR RPAR 
+
+46 : exp-->NAME LPAR exps RPAR 
+
+47 : exps-->exp 
+
+48 : exps-->exp COMMA exps 
+
+49 : var-->NAME 
+

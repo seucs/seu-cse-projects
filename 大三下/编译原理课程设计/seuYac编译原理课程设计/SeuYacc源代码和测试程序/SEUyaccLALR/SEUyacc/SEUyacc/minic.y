@@ -1,0 +1,166 @@
+%{
+/*	minic.y(1.9)	17:46:21	97/12/10
+*
+*	Parser demo of simple symbol table management and type checking.
+*/
+#include	<stdio.h>	/* for (f)printf() */
+#include	<stdlib.h>	/* for exit() */
+
+extern int	line	= 1;	/* number of current source line */
+extern int	seulex();	/* lexical analyzer generated from lex.l */
+char	*yytext;	/* last token, defined in lex.l  */		/* current symbol table, initialized in lex.l */
+char		*base;		/* basename of command line argument */
+
+void
+yyerror(char *s)
+{
+fprintf(stderr,"Syntax error on line #%d: %s\n",line,s);
+fprintf(stderr,"Last token was \"%s\"\n",yytext);
+exit(1);
+}
+
+%}
+
+%union	{
+	char*		name;
+	int		value;
+	T_LIST*		tlist;
+	T_INFO*		type;
+	SYM_INFO*	sym;
+	SYM_LIST*	slist;
+	}
+
+%token	INT FLOAT NAME STRUCT IF ELSE RETURN NUMBER LPAR RPAR LBRACE RBRACE
+%token	LBRACK RBRACK ASSIGN SEMICOLON COMMA DOT PLUS MINUS TIMES DIVIDE EQUAL
+
+%type	<name>	NAME
+%type	<value>	NUMBER
+%type	<type>	type parameter exp lexp
+%type	<tlist>	parameters more_parameters exps
+%type	<sym>	field var
+%type	<slist>	fields
+
+%right		EQUAL
+%left		PLUS	MINUS
+%left		TIMES	DIVIDE
+%left		UMINUS	
+%left		DOT	LBRACK	
+
+%%
+program		: declarations
+		;
+
+declarations	: declaration declarations
+		|
+		;
+
+declaration	: fun_declaration
+		| var_declaration
+		;
+
+fun_declaration	: type NAME 
+		  LPAR parameters RPAR 
+		  block	
+		;
+
+parameters	: more_parameters	
+		|			
+		;
+
+more_parameters	: parameter COMMA more_parameters
+		| parameter	
+		;
+
+parameter	: type NAME 
+		;
+
+block		: LBRACE 	
+		  var_declarations statements RBRACE
+		;
+
+var_declarations: var_declaration var_declarations
+		|
+		;
+
+var_declaration	: type NAME SEMICOLON
+		;
+
+type		: INT		
+		| FLOAT		
+		| type TIMES	
+		| STRUCT LBRACE fields RBRACE
+		;
+
+fields		: field fields	
+		|		
+		;
+
+field		: type NAME SEMICOLON
+		;
+
+statements	: statement SEMICOLON statements
+		| 
+		;
+
+ifhead          : IF LPAR exp RPAR {gen("j"+sym[2],sym[1],sym[3],"0");
+				TC.push(lineo);
+				FC.push(lineo+1);
+				gen("j","_","_","0");
+				quadSet[TC.top()-1].j = intToString(lineo);
+				TC.pop();}
+		;
+ifstatement     :  ifhead statement {gen("j","_","_","0");
+					TC.push(lineo);
+					quadSet[FC.top()-1].j = intToString(lineo);
+					FC.pop();}
+		;
+statement	: ifstatement 		
+		| ifstatement ELSE statement	{quadSet[TC.top()-1].j = intToString(lineo);
+						TC.pop();}
+		| lexp ASSIGN exp {gen(sym[1],sym[2],"_",sym[0]);}
+		| RETURN exp 
+		| block
+		;
+
+lexp		: var			
+		| lexp LBRACK exp RBRACK
+		| lexp DOT NAME	
+		;
+
+exp		: exp DOT NAME	
+		| exp LBRACK exp RBRACK
+		| exp PLUS exp	{temp = newTemp();
+					gen(sym[1],temp,sym[0],sym[2]);
+					SDTStack.push(temp);}
+		| exp MINUS exp	{temp = newTemp();
+					gen(sym[1],temp,sym[0],sym[2]);
+					SDTStack.push(temp);}
+		| exp TIMES exp	{temp = newTemp();
+					gen(sym[1],temp,sym[0],sym[2]);
+					SDTStack.push(temp);}
+		| exp DIVIDE exp{temp = newTemp();
+					gen(sym[1],temp,sym[0],sym[2]);
+					SDTStack.push(temp);}
+		| exp EQUAL exp	
+		| LPAR exp RPAR
+		| MINUS exp
+		| var			
+		| NUMBER 	
+		| NAME LPAR RPAR
+		| NAME LPAR exps RPAR
+		;
+
+exps		: exp 		
+		| exp COMMA exps
+		;
+
+var		: NAME 		
+		;
+%%
+
+int
+main(int argc,char *argv[])
+{
+base = "test.c";
+yyparse();
+}
